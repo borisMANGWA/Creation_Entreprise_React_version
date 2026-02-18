@@ -1,23 +1,33 @@
-import { RiArrowRightDoubleFill } from "react-icons/ri";
+// ! Icon's imports
+import { FcApproval } from "react-icons/fc";
+import { BsArrowDown } from "react-icons/bs";
+import { BiSearch } from "react-icons/bi";
+
+// ! Carousel's imports
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
-
 import "swiper/css";
 import "swiper/css/autoplay";
 import "swiper/css/pagination";
-import { DatasCarouselFlavor, ProductsTable, FilterTable } from "../Data/Data";
-import { useOutletContext } from "react-router";
-import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
-import { BiSearch } from "react-icons/bi";
-import { useState } from "react";
-import { FcApproval } from "react-icons/fc";
 
+// ! Other's imports
+import { DatasCarouselFlavor, ProductsTable, FilterTable } from "../Data/Data";
+import { Link } from "react-router";
+import { useState } from "react";
+import ProductCard from "../ProductCard/ProductCard";
 
 export default function Flavors() {
-  const theme = useOutletContext();
   const [active, setActive] = useState(null);
+  const [filter, setFilter] = useState();
+  
+  // ? Fonction pour filtrer le tableau de produit et n'afficher que ceux qui correspondent a la recherche
+  const VisibleProduit = ProductsTable.filter((produit) => {
+    if (filter && !produit.name.includes(filter)) return;
+    return produit;
+  });
+
   return (
-    <section className={`${theme === "dark" ? "bg-gray-600" : "bg-gray-200"}`} >
+    <section className="bg-app-bg">
       {/* ! HEADER */}
       <Swiper
         modules={[Autoplay]}
@@ -26,13 +36,10 @@ export default function Flavors() {
         speed={2000}
         autoplay={{ delay: 20000, disableOnInteraction: false }}
         loop
-        onSlideChange={() => console.log("Slide Change")}
-        onSwiper={(swiper) => console.log(swiper)}
-        className="h-100 shadow-md shadow-gray-700"
       >
         {DatasCarouselFlavor.map((data, index) => (
-          <SwiperSlide className="w-full h-full" key={index}>
-            <Hero title={data.title} bgImg={data.bgImg} />
+          <SwiperSlide key={index}>
+            <Hero data={data} />
           </SwiperSlide>
         ))}
       </Swiper>
@@ -40,163 +47,214 @@ export default function Flavors() {
       {/* ! MAIN Caroussel */}
       <div className="container my-4">
         {/* Head */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-80 gap-5 place-items-center lg:place-items-stretch m-1 mt-2">
-          <div className="flex flex-col md:flex-row items-center h-130 md:h-80 md:w-185 shadow-md shadow-gray-400 md:justify-evenly bg-amber-100">
-            <img
-              src="/Images/yogurt4.jpg"
-              alt="image du produit"
-              className="h-80 md:w-100 w-full"
-            />
-            <div className="md:w-80 w-90 h-full p-1 flex flex-col justify-around shadow-md shadow-gray-400">
-              <h1 className="text-red-500 font-bold text-4xl text-center italic">
-                Fraise
-              </h1>
-              <p className="text-center italic">
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                Tempora, nisi.
-              </p>
-              <h2 className="text-green-500 font-bold text-end italic pr-2 flex items-center gap-2 justify-end">
-                <FcApproval size={20} /> best products
+        <div className="grid grid-cols-1 lg:grid-cols-2 place-items-center m-1 mt-2">
+          <BestProd product={ProductsTable[0]} />
+          <form className="space-y-3 md:h-[80%] border-app-border border shadow-2xl flex flex-col justify-center rounded-2xl bg-app-bg px-10 py-5 hover:shadow-app-accent">
+            {/* # HEADER DU FORMULAIRE */}
+            <div className="text-center mb-3">
+              <h2 className="text-4xl font-bold bg-linear-to-r from-app-accent to-pink-500 bg-clip-text text-transparent mb-2">
+                Localisation pres de vous
               </h2>
-              <span className="flex justify-center h-[calc(100%-15rem)] items-end italic font-bold gap-10 md:gap-20">
-                <button className="center-inline  gap-3.5! md:gap-5! w-25 ">
-                  {" "}
-                  <BsArrowLeft /> Preview{" "}
-                </button>
-                <button className="center-inline gap-3.5! md:gap-5! w-25 ">
-                  {" "}
-                  Next <BsArrowRight />{" "}
-                </button>
-              </span>
             </div>
-          </div>
-          <div className="bg-amber-100 gap-2 rounded-md shadow shadow-gray-400 lg:w-full w-80 flex flex-col items-center pb-2 lg:justify-around">
-            <h1 className="gradiant-title w-full text-center font-bold text-3xl italic py-2">
-              Find a location near you
-            </h1>
-            <input
-              type="text"
-              className="border rounded-md p-3"
-              placeholder="Type here..."
-            />
-            <input
-              type="text"
-              className="border rounded-md p-3"
-              placeholder="Type here..."
-            />
-            <button className="center-inline gap-2! w-40 border-2 hover:border hover:scale-105 p-1.5 rounded-md justify-center ">
-              <BiSearch /> Search{" "}
-            </button>
-          </div>
+            {/* # HEADER DU FORMULAIRE */}
+            {/* # Section identite */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold mb-2 ml-1">
+                  Votre Pays
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex: Cameroon"
+                  className="w-full p-4 rounded-2xl bg-app-input border border-app-border focus:ring-2 focus:ring-app-accent outline-none transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-2 ml-1">
+                  Votre Ville
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex: Bafoussam"
+                  className="w-full p-4 rounded-2xl bg-app-input border border-app-border focus:ring-2 focus:ring-app-accent outline-none transition-all"
+                />
+              </div>
+            </div>
+            {/* # Section identite */}
+            {/* # Section Validation */}
+            <div className="pt-8">
+              <button className="w-full bg-app-accent hover:bg-app-accent-hover text-white font-bold py-5 rounded-2xl shadow-lg transform hover:scale-[1.02] transition-all duration-300 uppercase tracking-widest flex items-center justify-center gap-4">
+                <BiSearch /> Rechercher
+              </button>
+            </div>
+          </form>
         </div>
         {/* Head */}
         {/* BODY */}
-        <Swiper
-          modules={[Autoplay, Pagination]}
-          spaceBetween={50}
-          breakpoints={{
-            0: { slidesPerView: 1.2 },
-            640: { slidesPerView: 2 },
-            768: { slidesPerView: 3 },
-            1024: { slidesPerView: 4 },
-          }}
-          speed={2000}
-          autoplay={{ delay: 10000, disableOnInteraction: false }}
-          loop
-          centeredSlides
-          pagination={{ clickable: true }}
-          initialSlide={2}
-          onSlideChange={(index) => setActive(index.realIndex)}
-          className="h-80 flex py-10 my-10"
-        >
-          {ProductsTable.map((image, i) => (
-            <SwiperSlide className="h-full">
-              <img
-                src={image.image}
-                className={` ${active == i && "active-image"} image-swiper rounded-md h-70 mt-5 w-80`}
-              />
-              {console.log(active, i)}
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        <div className="carousel-container">
+          <Carousel
+            products={ProductsTable}
+            active={active}
+            setActive={setActive}
+          />
+        </div>
         {/* BODY */}
       </div>
       {/* ! MAIN Caroussel */}
       {/* ! PRODUCTS SECTION */}
       <div className="container my-4">
         <h1 className="gradiant-title font-bold italic text-5xl text-center my-9">
-          | Find Your Perfect Products
+          | Trouvez le produit parfait
         </h1>
         {/* Filter */}
         <div className="container">
           <div className="grid grid-cols-3 md:flex px-4 gap-7 md:justify-center mb-10">
             {FilterTable.map((elt, index) => (
-              <h1 className={`${elt.bgColor} py-1.5 px-4 rounded-md border relative font-bold italic cursor-pointer hover:opacity-80 hover:scale-105`} key={index}>{elt.name}</h1>
+              <h1
+                onClick={() => setFilter(elt.name)}
+                className={`${elt.bgColor} py-1.5 px-4 rounded-md border relative font-bold italic cursor-pointer hover:opacity-80 hover:scale-105`}
+                key={index}
+              >
+                {elt.name}
+              </h1>
             ))}
           </div>
         </div>
         {/* Filter */}
+        {/* Visible Products */}
         <div className="flip-card">
-          {ProductsTable.map((product, index) => (
-            <Products product={product} key={index} theme={theme} />
+          {VisibleProduit.map((product, index) => (
+            <div
+              key={index}
+              className="group relative bg-app-card rounded-4xl p-4 shadow-xl hover:shadow-2xl transition-all duration-500 border-app-accent/20 border-b-8 hover:border-app-accent transform hover:-translate-y-2"
+            >
+              <ProductCard produit={product} />
+            </div>
           ))}
         </div>
+        {/* Visible Products */}
       </div>
       {/* ! PRODUCTS SECTION */}
     </section>
   );
 }
 
-function Hero({ title, bgImg }) {
+function Hero({ data }) {
   return (
-    <div
-      className={`${bgImg} bg-no-repeat bg-cover bg-center shadow-md shadow-gray-500 h-full`}
-    >
-      <div className="p-10 font-bold flex flex-col items-start justify-center gap-3">
-        <h1 className="italic text-[2.6rem] md:text-7xl my-2.5 gradiant-title">
-          {title}
-        </h1>
-        <p className="w-99 sm:w-xl">
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ullam dolore
-          illo ea rem similique porro earum! Lorem ipsum dolor sit amet
-          consectetur.
-        </p>
-        <h3 className="text-rose-500 italic text-xl">
-          Our Yogurt is simply irresistible!
-        </h3>
-        <button className="button-learn-more">
-          Lean More <RiArrowRightDoubleFill />{" "}
-        </button>
+    <div className="relative h-[90vh] w-full flex items-center justify-center overflow-hidden rounded-b-[3rem] shadow-2xl">
+      {/* Image de fond avec filtre pour le contraste */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src={data.image}
+          alt="Yaourt artisanale"
+          className="w-full h-full object-cover scale-105"
+        />
+        {/* Overlay: Pour la lisibilite */}
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
       </div>
+      {/* Image de fond avec filtre pour le contraste */}
+      {/* Contenu Texte */}
+      <div className="relative z-10 text-center px-4 max-w-4xl">
+        <h1 className="text-5xl md:text-7xl font-black text-white leading-tight mb-6">
+          {data.title1} <br />{" "}
+          <span className="text-app-accent"> {data.title2} </span>
+        </h1>
+        <p className="text-lg md:text-xl text-white/90 font-medium mb-10 max-w-2xl mx-auto leading-relaxed">
+          {data.description}
+        </p>
+      </div>
+      {/* Contenu Texte */}
+      {/* petit indicateur de scroll */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+        <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center pt-2">
+          <div>
+            {" "}
+            <BsArrowDown className="w-5 h-5 text-white rounded-full" />
+          </div>
+        </div>
+      </div>
+      {/* petit indicateur de scroll */}
     </div>
   );
 }
-
-function Products({ product, key, theme }) {
+function Carousel({ products, active, setActive }) {
   return (
-    <div className={`flip-card-inner ${product.bgImg}`} key={key}>
-      <div className="flip-card-front">
-        {" "}
-        <h1 className="font-bold gradiant-title text-4xl my-2 ml-2 italic">
-          Yaourt a la {product.name}
-        </h1>{" "}
-      </div>
-      <div
-        className={`flip-card-back ${theme === "dark" ? "bg-gray-600 text-white/90" : "bg-gray-100 text-black/80"}`}
-      >
-        <img
-          src={product.image}
-          alt=""
-          className={`${theme === "dark" ? "border-white" : "border-gray-400"}`}
-        />
-        <h2>Yaourt a la {product.name}</h2>
-        <p>{product.description}</p>
-        <a
-          href="#"
-          className={`${theme === "dark" ? "border-white hover:bg-white hover:text-white" : "border-black hover:bg-gray-600 hover:text-black"}`}
+    <Swiper
+      modules={[Pagination]}
+      breakpoints={{ 640: { slidesPerView: 2 }, 1024: { slidesPerView: 4 } }}
+      slidesPerView={1.3}
+      loop
+      pagination={{ clickable: true }}
+      spaceBetween={15}
+      centeredSlides
+      onSlideChange={(index) => setActive(index.realIndex)}
+      className="w-full"
+    >
+      {products.map((prod, i) => (
+        <SwiperSlide key={i} className="">
+          <div
+            className={`relative p-6 rounded-[3rem] ${active == i && "scale-100 bg-app-text!"} scale-90 w-full sm:w-70 lg:w-80! dark:bg-app-card transition-all duration-500 hover:rotate-2 shadow-inner group`}
+          >
+            <img
+              src={prod.image}
+              className="rounded-[2.5rem] object-cover w-full aspect-square transform transition-transform duration-700 hover:scale-105"
+              alt=""
+            />
+            <h3
+              className={`${active == i && "text-[1rem] md:text-xl"} font-bold text-center text-app-accent`}
+            >
+              {prod.titre}
+            </h3>
+          </div>
+        </SwiperSlide>
+      ))}
+    </Swiper>
+  );
+}
+function BestProd({ product }) {
+  return (
+    <div className="py-20 bg-app-bg transition-colors duration-500 w-full overflow-hidden">
+      <div className="mx-auto px-6">
+        <div
+          className={`flex flex-col md:flex-row items-center gap-6`}
+          key={product.id}
         >
-          Read More
-        </a>
+          {/* Bloc Image avec effet de levitation au survol */}
+          <div className="w-full md:w-80 group">
+            <div
+              className={`relative p-6 rounded-[3rem] ${product.bgFont} dark:bg-app-card transition-all duration-500 group-hover:rotate-2 shadow-inner`}
+            >
+              <img
+                src={product.image}
+                className="rounded-[2.5rem] object-cover w-full aspect-square transform transition-transform duration-700 group-hover:scale-105"
+                alt=""
+              />
+            </div>
+          </div>
+          {/* Bloc Image avec effet de levitation au survol */}
+          {/* Bloc Text */}
+          <div className="w-1/2 md:w-1/2 space-y-6 relative">
+            <h1 className="absolute transform rotate-35 top-0 right-0 flex items-center gap-1 text-green-500 font-bold ">
+              <FcApproval size={20} /> Meilleur produit
+            </h1>
+            <h2 className="text-3xl md:text-4xl font-bold text-app-text leading-tight tracking-tight">
+              {product.name}
+            </h2>
+            <div className="w-16 h-1.5 bg-app-accent rounded-full transition-all duration-500 hover:w-32"></div>
+            <p className="text-lg md:text-md line-clamp-4 text-app-text opacity-75 leading-relaxed font-medium">
+              {product.description}
+            </p>
+            <Link
+              to="/Sale"
+              state={{ fromProductDescription: true, id: product.id }}
+            >
+              <button className="flex items-center gap-3 px-6 py-3 rounded-full border-2 border-app-border text-app-accent font-bold hover:bg-app-accent hover:text-white transition-all duration-300 transform active:scale-95 uppercase text-xs tracking-widest">
+                En savoir plus
+              </button>
+            </Link>
+          </div>
+          {/* Bloc Text */}
+        </div>
       </div>
     </div>
   );

@@ -1,43 +1,40 @@
-import { RiArrowRightDoubleFill } from "react-icons/ri";
-import { PartnersData, ProductsData } from "../Data/Data";
-import { MdMoreHoriz } from "react-icons/md";
-import { Link, useOutletContext } from "react-router";
+import { PartnersData, ProductsTable } from "../Data/Data";
+import { Link } from "react-router";
+import ProductCard from "../ProductCard/ProductCard";
+import { BsArrowDown } from "react-icons/bs";
 
 function Home() {
-  const theme = useOutletContext();
   return (
-    <section
-      className={`flex-1 ${theme === "dark" ? "bg-gray-500" : "bg-gray-200"}`}
-    >
+    <section className="bg-app-bg">
       {/* ! Hero */}
       <Hero />
       {/* ! Hero */}
       {/* ! Produits */}
-      <Produits theme={theme} />
+      <Produits />
       {/* ! Produits */}
       {/* ! About Our Partners */}
       <div className="container my-5">
         <h2 className="gradiant-title text-4xl md:text-5xl font-bold my-3 ml-5">
-          | Our Partners
+          | Nos Partenaires
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:px-5 gap-5 place-items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 md:px-5 gap-5 place-items-center">
           {PartnersData.map((partner) => (
             <div
-              className={`flex flex-col justify-center items-center px-6.5 w-80 lg:w-100 h-100 backface-hidden rounded-3xl shadow-md shadow-gray-400 ${theme === "dark" ? "bg-gray-600 text-white/90" : "bg-gray-100 text-black/80"}`}
+              className={`flex flex-col justify-center gap-5 items-center px-6.5 w-full md:w-80 lg:w-100 h-100 rounded-3xl shadow-xl shadow-gray-400 bg-app-card text-app-text group`}
             >
               <img
                 src={partner.img}
-                className={`size-30 p-1 object-cover border-2 rounded-full mb-6.25 ${theme === "dark" ? "border-white" : "border-gray-400"}`}
+                className={`size-30 p-1 object-cover border-2 group-hover:-rotate-20 transform transition-transform rounded-full mb-6.25 border-app-border`}
               />
-              <h2 className="mb-3.75 text-3xl font-bold">{partner.name}</h2>
-              <p className="mb-4 text-[14px] text-justify">
+              <h2 className="text-3xl font-black">{partner.name}</h2>
+              <p className="text-start lg:text-justify space-y-6 tracking-wider font-medium px-3 line-clamp-3">
                 {partner.description}
               </p>
               <a
                 href={partner.link}
-                className={`${theme === "dark" ? "border-white hover:text-white" : "border-black hover:text-black"} text-[15px] font-bold py-2.5 px-5 rounded-[10px] border bg-transparent  transition-all duration-300 hover:scale-[1.1]`}
+                className={`border-app-border text-[15px] font-bold py-2.5 px-5 rounded-[10px] border transition-all duration-300 hover:scale-[1.1]`}
               >
-                Read More
+                Lire la suite
               </a>
             </div>
           ))}
@@ -50,58 +47,80 @@ function Home() {
 
 function Hero() {
   return (
-    <div
-      className={`bg-[url("/Images/yogurt3.jpg")] bg-no-repeat bg-cover bg-center shadow-md shadow-gray-500`}
-    >
-      <div className="p-10 font-bold flex flex-col items-start gap-3">
-        <h1 className="italic text-[2.6rem] md:text-7xl my-2.5 gradiant-title">
-          The Best Ingredients
-        </h1>
-        <p className="w-99 sm:w-xl">
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ullam dolore
-          illo ea rem similique porro earum! Lorem ipsum dolor sit amet
-          consectetur.
-        </p>
-        <h3 className="text-rose-500 italic text-xl">
-          Our Yogurt is simply irresistible!
-        </h3>
-        <button className="button-learn-more">
-          Lean More <RiArrowRightDoubleFill />{" "}
-        </button>
+    <div className="relative h-[90vh] w-full flex items-center justify-center overflow-hidden rounded-b-[3rem] shadow-2xl">
+      {/* Image de fond avec filtre pour le contraste */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="/Images/intro.jpg"
+          alt="Yaourt artisanale"
+          className="w-full h-full object-cover scale-105"
+        />
+        {/* Overlay: Pour la lisibilite */}
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
       </div>
+      {/* Image de fond avec filtre pour le contraste */}
+      {/* Contenu Texte */}
+      <div className="relative z-10 text-center px-4 max-w-4xl">
+        <h1 className="text-5xl md:text-7xl font-black text-white leading-tight mb-6">
+          Le Gout Authentique <br />
+          <span className="text-app-accent">du Terroir</span>
+        </h1>
+        <p className="text-lg md:text-xl text-white/90 font-medium mb-10 max-w-2xl mx-auto leading-relaxed">
+          Découvrez l'onctuosité de nos yaourt artisanaux, prépares avec des
+          fruits frais et 100% naturels pour une expérience inoubliable.
+        </p>
+        <div className="flex flex-col md:flex-row gap-4 justify-center">
+          <Link
+            to="/Flavors"
+            className="bg-app-accent hover:bg-app-accent-hovertext-white px-10 py-4 rounded-full font-bold text-lg shadow-xl shadow-app-accent/40 transition-all transform hover:scale-110 active:scale-95"
+          >
+            Découvrir nos saveurs
+          </Link>
+          <Link
+            to="/About"
+            className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/30 px-10 py-4 rounded-full font-bold text-lg transition-all"
+          >
+            Notre Histoire
+          </Link>
+        </div>
+      </div>
+      {/* Contenu Texte */}
+      {/* petit indicateur de scroll */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+        <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center pt-2">
+          <div>
+            {" "}
+            <BsArrowDown className="w-5 h-5 text-white rounded-full" />
+          </div>
+        </div>
+      </div>
+      {/* petit indicateur de scroll */}
     </div>
   );
 }
-function Produits({ theme }) {
+function Produits() {
   return (
-    <div className="my-10 flex flex-col gap-10 items-center">
-      <h1 className="font-bold text-5xl italic gradiant-title">NEW PRODUCTS</h1>
-      <div className="w-full px-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 place-items-center">
-        {ProductsData.map((produit, index) => (
-          <div
-            key={index}
-            className={`w-80 sm:w-70 lg:w-88 p-2 pb-5 flex flex-col gap-3 items-center rounded-md relative font-bold ${produit.bgFont} hover:scale-105 hover:shadow-md shadow-gray-600 cursor-default`}
-          >
-            <img
-              src={produit.image}
-              alt="Image du produit"
-              className="rounded-md h-70 w-full"
-            />
-            <h2 className="text-xl">{produit.name}</h2>
-            <p className={`${produit.textFont}`}>{produit.price}</p>
-            <Link
-              to="/Flavors"
-              className={`p-2 rounded-md bg-white/60 hover:bg-rose-400 transition-colors duration-300 absolute bottom-0 -mb-5 shadow-md`}
+    <div className="product-card my-10 flex flex-col gap-10 items-center">
+      <h1 className="font-bold text-5xl italic gradiant-title">
+        Nouveaux Produits
+      </h1>
+      <div className="w-full px-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 place-items-center">
+        {ProductsTable.map((produit, index) => {
+          if (index >= 5) return null;
+          return (
+            <div
+              key={index}
+              className="group relative bg-app-card rounded-4xl p-4 shadow-xl hover:shadow-2xl transition-all duration-500 border-app-accent/20 border-b-8 hover:border-app-accent transform hover:-translate-y-2"
             >
-              View Details
-            </Link>
-          </div>
-        ))}
+              <ProductCard produit={produit} />
+            </div>
+          );
+        })}
         <Link
           to="/Flavors"
-          className={`bg-linear-to-r ${theme == "dark" ? "form-white to-white/60" : "form-gray-300 to-gray-500"}  flex justify-center font-bold items-center rounded-md italic hover:scale-90 p-5 w-32`}
+          className="bg-app-accent/30 shadow-2xl shadow-app-text transition-all duration-500 rounded-2xl p-3 hover:bg-app-accent-hover"
         >
-          See More <MdMoreHoriz />{" "}
+          En savoir plus
         </Link>
       </div>
     </div>

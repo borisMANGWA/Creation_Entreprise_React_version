@@ -1,253 +1,203 @@
-import { useOutletContext } from "react-router";
-import { ProductsTable, SelectedProducts } from "../Data/Data";
+import { Link, useLocation } from "react-router";
+import { FilterTable, ProductsTable } from "../Data/Data";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay } from "swiper/modules";
+import { Pagination, Navigation } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/pagination";
+import "swiper/css/navigation";
 import { useState } from "react";
+import ProductDescription from "../ProductDescription/ProductDescription";
+import { FaMinus, FaPlus } from "react-icons/fa";
 
 export default function Sale() {
-  const theme = useOutletContext();
-  const title = SelectedProducts[0].title;
-
+  const location = useLocation();
+  const IdProduit = location.state?.id || ProductsTable[0].id;
   const [active, setActive] = useState(null);
-  const [show, setShow] = useState(false);
-  const [showForm, setShowForm] = useState(false);
+  const [filter, setFilter] = useState();
 
+  
+  // ? Fontcion pour trouver les produit de meme categorie en filtrant le tableau "ProductsTable"
+  const produitSelected = ProductsTable.find((p) => p.id == IdProduit);
+  const TabSameProd = ProductsTable.filter((produit) => {
+    if (!produit.name.includes(produitSelected.name)) return;
+    return produit;
+  });
+
+  // ? Fontcion pour trouver les produits qui correspondents a la categorie selectionner en filtrant le tableau "ProductsTable"
+  const VisibleProduit = ProductsTable.filter((produit) => {
+    if (filter && !produit.name.includes(filter)) return;
+    return produit;
+  });
   return (
-    <section className={`${theme === "dark" ? "bg-gray-600" : "bg-gray-200"}`}>
+    <section className="bg-app-bg text-app-text transition-colors duration-300 relative">
       {/* ! HEADER */}
-      <Swiper
-        modules={[Pagination]}
-        pagination={{ clickable: true }}
-        spaceBetween={0}
-        slidesPerView={1}
-        speed={2000}
-        loop
-        className="h-100 shadow-md shadow-gray-700"
-      >
-        {SelectedProducts.map((data, index) => (
-          <SwiperSlide className="w-full h-full" key={index}>
-            <Hero
-              title={data.title}
-              setShowForm={setShowForm}
-              bgImg={data.bgImg}
-            />
-          </SwiperSlide>
-        ))}
-      </Swiper>
-      {/* PURCHASE FORM */}
-      {showForm && (
-        <div className="md:justify-center flex">
-          <div className="bg-amber-100 md:w-[50%] flex flex-col rounded-md p-2 italic">
-            <div className="italic pl-2.5">
-              <h1 className="font-bold text-4xl">Purchase Oder</h1>
-              <p>Please fill the form to continu </p>
-            </div>
-            <div className="flex flex-col my-3">
-              {/* My Information */}
-              <div className="flex container-info">
-                <h1 className="text-bold">You Name</h1>
-                <div className="container-multiple">
-                  <label htmlFor="firstName">
-                    First Name <input type="text" id="firstName" />
-                  </label>
-                  <label htmlFor="lastName">
-                    Last Name <input type="text" id="lastName" />
-                  </label>
-                </div>
-              </div>
-              <div className="flex container-info">
-                <h1 className="text-bold">Your Email</h1>
-                <label htmlFor="email" className="w-[50%]">
-                  Email <input type="email" name="email" id="email" />
-                </label>
-              </div>
-              <div className="flex container-info">
-                <h1 className="text-bold">Shipping Address</h1>
-                <div className="container-multiple">
-                  <label htmlFor="city">
-                    City <input type="text" />
-                  </label>
-                  <label htmlFor="quartier">
-                    Neighborhood <input type="text" />
-                  </label>
-                  <label htmlFor="address">
-                    Address <input type="text" />
-                  </label>
-                </div>
-              </div>
-              {/* My Information */}
-              {/* My payment methode */}
-              <div>
-                <h1 className="text-bold">Payment Methods</h1>
-                <label
-                  htmlFor="mtn"
-                  className="flex-row! gap-3 pl-10 items-center w-[80%]!"
-                >
-                  <input
-                    type="radio"
-                    onChange={() => setShow(false)}
-                    name="paiement"
-                    id="mtn"
-                  />{" "}
-                  <img
-                    src="/Images/mtn.logo.png"
-                    className="w-20 h-15"
-                    alt=""
-                  />
-                </label>
-                <label
-                  htmlFor="orange"
-                  className="flex-row! gap-3 pl-10 items-center w-[80%]!"
-                >
-                  <input
-                    type="radio"
-                    onChange={() => setShow(false)}
-                    name="paiement"
-                    id="orange"
-                  />{" "}
-                  <img
-                    src="/Images/orange-logo.png"
-                    className="w-20 h-15"
-                    alt=""
-                  />
-                </label>
-                <label htmlFor="other" className="block! pl-10 text-black!">
-                  <input
-                    type="radio"
-                    onChange={() => setShow(true)}
-                    name="paiement"
-                    id="other"
-                  />{" "}
-                  OTHER{" "}
-                </label>
-                {show && (
-                  <input
-                    type="text"
-                    placeholder="Please entrer the other method here..."
-                  />
-                )}
-              </div>
-              {/* My payment methode */}
-            </div>
-            <div className="flex justify-center w-full">
-              <button onClick={() => setShowForm(false)} className="px-20 py-1 cursor-pointer hover:font-bold border rounded-md bg-blue-500">
-                Submit
-              </button>
-            </div>
-          </div>
+      <Hero data={produitSelected} />
+      <div className="bg-app-bg my-10 px-1">
+        <h2 className="text-4xl md:text-5xl text-center font-black dark:text-black/70 leading-tight tracking-tight">
+          Produits de la meme categorie
+        </h2>
+        {/* Bloc Image avec effet de levitation au survol */}
+        <div className="flex justify-center p-5">
+          <Carousel
+            products={TabSameProd}
+            active={active}
+            setActive={setActive}
+          />
         </div>
-      )}
-      {/* PURCHASE FORM */}
-      <div className="my-10 px-1">
-        <h1 className="font-bold italic text-center text-2xl pl-5">
-          See the same products
-        </h1>
-        <Swiper
-          modules={[Autoplay, Pagination]}
-          spaceBetween={50}
-          breakpoints={{
-            0: { slidesPerView: "auto" },
-            640: { slidesPerView: 2 },
-            768: { slidesPerView: 3 },
-            1024: { slidesPerView: 4 },
-          }}
-          slidesPerView={1.2}
-          speed={2000}
-          autoplay={{ delay: 10000, disableOnInteraction: false }}
-          loop
-          centeredSlides
-          centeredSlidesBounds
-          centerInsufficientSlides
-          pagination={{ clickable: true }}
-          initialSlide={2}
-          onSlideChange={(index) => setActive(index.realIndex)}
-          className="h-80 py-10 my-10 max-w-5xl mx-auto"
-        >
-          {ProductsTable.map(
-            (image, i) =>
-              title == image.name && (
-                <SwiperSlide className="h-full w-auto!">
-                  <div
-                    className={` ${active == i && "active-image"} image-swiper rounded-md h-70 mt-5 w-80 relative`}
-                  >
-                    <img
-                      src={image.image}
-                      className={`rounded-md h-full w-full`}
-                    />
-                    <h1 className="absolute top-2 left-3 gradiant-title font-bold text-2xl">
-                      Yaourt a la {image.name}
-                    </h1>
-                  </div>
-                </SwiperSlide>
-              ),
-          )}
-        </Swiper>
+        {/* Bloc Image avec effet de levitation au survol */}
       </div>
       {/* ! HEADER */}
       {/* BODY */}
-      <h1 className="gradiant-title font-bold italic text-3xl text-center my-9">
-        | Also See Those Products
+      <h1 className="text-4xl md:text-5xl bg-app-bg text-center font-black dark:text-black/70 leading-tight tracking-tight">
+        | Regardez egalement ces autres Produits
       </h1>
-      <div className="flip-card">
-        {ProductsTable.map((product, index) => (
-          <Products product={product} index={index} theme={theme} />
-        ))}
+      {/* Filter */}
+      <div className="container bg-app-bg">
+        <div className="grid grid-cols-3 md:flex px-4 gap-7 md:justify-center pt-10">
+          {FilterTable.map((elt, index) => (
+            <h1
+              onClick={() => setFilter(elt.name)}
+              className={`${elt.bgColor} py-1.5 px-4 rounded-md border relative font-bold italic cursor-pointer hover:opacity-80 hover:scale-105`}
+              key={index}
+            >
+              {elt.name}
+            </h1>
+          ))}
+        </div>
       </div>
+      {/* Filter */}
+      <ProductDescription features={VisibleProduit} />
       {/* BODY */}
     </section>
   );
 }
 
-function Hero({ title, setShowForm, bgImg }) {
+function Hero({ data }) {
+  const [Qte, setQte] = useState(1);
+  const Increment = () => {
+    setQte((count) => count + 1);
+    console.log(Qte);
+  };
+  const Decrement = () => {
+    setQte((count) => (count <= 0 ? count : count - 1));
+    console.log(Qte);
+  };
   return (
-    <div
-      className={`${bgImg} bg-no-repeat bg-cover bg-center shadow-md shadow-gray-500 h-full`}
-    >
-      <div className="p-10 font-bold flex flex-col items-start justify-center gap-10">
-        <h1 className="italic text-[2.6rem] md:text-7xl my-2.5 gradiant-title">
-          {title}
-        </h1>
-        <p className="w-99 sm:w-xl">
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ullam dolore
-          illo ea rem similique porro earum! Lorem ipsum dolor sit amet
-          consectetur.
-        </p>
-        <button onClick={() => setShowForm(true)} className="button-learn-more">
-          Buy Now
-        </button>
+    <div className="relative h-[125vh] md:h-[90vh] w-full flex items-center justify-center overflow-hidden rounded-b-[3rem] shadow-2xl">
+      {/* Image de fond avec filtre pour le contraste */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src={data.image}
+          alt="Yaourt artisanale"
+          className="w-full h-full object-cover scale-105"
+        />
+        {/* Overlay: Pour la lisibilite */}
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
       </div>
+      {/* Image de fond avec filtre pour le contraste */}
+      {/* Contenu Texte */}
+      <div className="relative z-10 text-center md:px-4 w-full">
+        <h1 className="text-5xl md:text-7xl font-black text-app-accent leading-tight md:mb-0 md:mt-0 mt-10 mb-6">
+          {data.name}
+        </h1>
+        <div className="grid grid-cols-1 md:grid-cols-3 w-full place-items-center">
+          <p className="text-lg md:text-xl text-white/90 font-medium md:mb-0 mb-3 max-w-2xl mx-auto leading-6">
+            {data.description}
+          </p>
+          <span>
+            <h2 className="text-2xl md:text-5xl md:my-4 font-black text-app-accent">
+              17.00 $
+            </h2>
+            <p className="flex items-center justify-between font-bold text-xl text-app-text cursor-default">
+              <FaMinus
+                className="border border-app-border rounded-full p-2 size-7 hover:p-1 mx-4"
+                onClick={Decrement}
+              />
+              Quantite : {Qte <= 9 ? "0" + Qte : Qte}
+              <FaPlus
+                className="border border-app-border rounded-full p-2 size-7 hover:p-1 mx-4"
+                onClick={Increment}
+              />
+            </p>
+          </span>
+          <div className="border border-app-border rounded-md bg-slate-50 md:mb-0 mb-10 p-5">
+            <table className="text-start text-black/70">
+              <thead>
+                <tr className="text-2xl bg-app-bg py-1!">
+                  <th>Caracteristiques</th> <th>Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="bg-gray-200">
+                  <td>Format</td>
+                  <td>Pot individuel de 120g</td>
+                </tr>
+                <tr className="bg-gray-300">
+                  <td>Texture</td>
+                  <td>Brassee et veloutée</td>
+                </tr>
+                <tr className="bg-gray-200">
+                  <td>Conservation</td>
+                  <td>Au frais entre 0c et +6c</td>
+                </tr>
+                <tr className="bg-gray-300">
+                  <td>Nutri-Score</td>
+                  <td>A (Excellent)</td>
+                </tr>
+                <tr className="bg-gray-200">
+                  <td>Allergenes</td>
+                  <td>Contient du lactose</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <Link
+          to="/Purchase"
+          className="bg-app-accent hover:bg-app-accent-hover text-white px-10 py-4 rounded-full font-bold text-lg shadow-xl shadow-app-accent/40 transition-all transform hover:scale-110 active:scale-95"
+        >
+          Commander Mes Delices
+        </Link>
+      </div>
+      {/* Contenu Texte */}
     </div>
   );
 }
-function Products({ product, index, theme }) {
+
+function Carousel({ products, active, setActive }) {
   return (
-    <div className={`flip-card-inner ${product.bgImg}`} key={index}>
-      <div className="flip-card-front">
-        {" "}
-        <h1 className="font-bold gradiant-title text-4xl my-2 ml-2 italic">
-          Yaourt a la {product.name}
-        </h1>{" "}
-      </div>
-      <div
-        className={`flip-card-back ${theme === "dark" ? "bg-gray-600 text-white/90" : "bg-gray-100 text-black/80"}`}
-      >
-        <img
-          src={product.image}
-          alt=""
-          className={`${theme === "dark" ? "border-white" : "border-gray-400"}`}
-        />
-        <h2>Yaourt a la {product.name}</h2>
-        <p>{product.description}</p>
-        <a
-          href="#"
-          className={`${theme === "dark" ? "border-white hover:bg-white hover:text-white" : "border-black hover:bg-gray-600 hover:text-black"}`}
-        >
-          Read More
-        </a>
-      </div>
-    </div>
+    <Swiper
+      modules={[Pagination, Navigation]}
+      slidesPerView={1.3}
+      breakpoints={{ 640: { slidesPerView: 2 }, 728: { slidesPerView: 3 } }}
+      loop
+      pagination={{ clickable: true }}
+      spaceBetween={5}
+      centeredSlides
+      centerInsufficientSlides
+      centeredSlidesBounds
+      onSlideChange={(index) => setActive(index.realIndex)}
+      className="md:w-[70%] w-full"
+    >
+      {products.map((prod, i) => (
+        <SwiperSlide key={i} className="lg:w-80! w-full">
+          <div
+            className={`relative p-6 rounded-[3rem] ${active == i && "scale-100 bg-app-text!"} scale-90 w-full sm:w-70 lg:w-80! dark:bg-app-card transition-all duration-500 hover:rotate-2 shadow-inner group`}
+          >
+            <img
+              src={prod.image}
+              className="rounded-[2.5rem] object-cover w-full aspect-square transform transition-transform duration-700 hover:scale-105"
+              alt=""
+            />
+            <h3
+              className={`${active == i && "text-[1rem] md:text-xl"} font-bold text-center text-app-accent`}
+            >
+              {prod.titre}
+            </h3>
+          </div>
+        </SwiperSlide>
+      ))}
+    </Swiper>
   );
 }

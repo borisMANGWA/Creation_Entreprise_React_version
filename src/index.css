@@ -1,5 +1,33 @@
 @import "tailwindcss";
 
+@theme {
+  /* ? Valuers par defaut : Mode Light */
+  --color-app-bg: #eeeeeb; /* ? Blanc creme onctueux #fdfcf0*/
+  --color-app-card: #ffffff; /* ? Blanc pur de carte */
+  --color-app-text: #2d3436; /* ? Gris tres fonce pour la lecture #080808 */
+  --color-app-accent: #ff5f5f; /* ? Rouge fraise */
+  --color-app-accent-hover: #e54b4b; /* ? Rouge plus sombre au survol */
+  --color-app-input: #ffffff;
+  --color-app-border: #e2e8f0;
+}
+/* ? Valeurs pour le mode Dark */
+[data-theme="dark"] {
+  --color-app-bg: #1a1a1c23; /* ? Noir Profond #0d0d0e23*/
+  --color-app-card: #242731; /* ? Anthracite pour les cartes */
+  --color-app-text: #ffffff; /* ? Blanc casse pour la lecture #ffffff*/
+  --color-app-accent: #ff7070; /* ? Rouge plus lumineux */
+  --color-app-accent-hover: #ff8a80; /* ? Rouge clair au survol */
+  --color-app-input: #2d313e;
+  --color-app-border: #3f4451;
+}
+
+/* ? Animation de transition globale */
+.product-card {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
 @layer {
   #root {
     @apply flex flex-col min-h-screen justify-between;
@@ -7,21 +35,31 @@
   section {
     @apply min-w-[98vw] min-h-screen;
   }
-  .container{
-    @apply  min-w-[98vw];
+  .container {
+    @apply min-w-screen md:min-w-[98vw];
   }
   .center-inline {
     @apply flex items-center gap-10;
   }
-  .nav-link {
+  /* .nav-link {
     @apply p-2.5 transition-all duration-300;
   }
   .active-nav-link,
   .nav-link:hover {
     @apply p-2 scale-110 text-amber-400 border-y-2;
+  } */
+  .nav-link-new {
+    @apply transition-all duration-300 p-2;
+  }
+  .active-nav-link-new,
+  .nav-link-new:hover {
+    @apply scale-110 border-y-2 rounded-2xl text-app-accent;
   }
   .gradiant-title {
     @apply bg-linear-to-r from-red-800 to-red-400 bg-clip-text text-transparent;
+  }
+  .gradiant-name {
+    @apply bg-linear-to-r from-blue-800 to-blue-300 bg-clip-text text-transparent;
   }
   .button-learn-more {
     @apply bg-red-400 flex gap-1 p-2 rounded-md items-center shadow-md shadow-gray-500 hover:bg-red-500 hover:scale-105;
@@ -57,19 +95,25 @@
     @apply text-[15px] font-bold py-2.5 px-5 rounded-[10px] border bg-transparent  transition-all duration-300 hover:scale-[1.1];
   }
 
-  .text-bold{
-    @apply font-bold w-[50%]
+  .text-bold {
+    @apply font-bold w-[50%];
   }
-  label{
-    @apply relative flex flex-col-reverse text-gray-600
+  label {
+    @apply relative flex flex-col-reverse text-gray-600;
   }
-  input{
-    @apply border outline rounded-md px-4 py-2 border-black
+  input {
+    @apply border outline rounded-md px-4 py-2 border-black;
   }
-  .container-multiple{
-    @apply flex flex-col w-[50%]
+  .container-multiple {
+    @apply flex flex-col w-[50%];
   }
-  .container-info{
-    @apply my-3
+  .container-info {
+    @apply my-3;
+  }
+  table tr {
+    @apply p-2 grid grid-cols-2 rounded-md my-1;
+  }
+  table tr td:nth-child(1) {
+    @apply font-bold;
   }
 }
